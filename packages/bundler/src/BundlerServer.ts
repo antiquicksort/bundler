@@ -13,6 +13,8 @@ import { Server } from 'http'
 import { RpcError } from './utils'
 import { EntryPoint__factory, UserOperationStruct } from '@account-abstraction/contracts'
 import { DebugMethodHandler } from './DebugMethodHandler'
+const forkConfig = require('../../../localfork/forkConfig.json')
+const { LOCALHOST_URL, HARDHAT_FORK_CHAIN_ID_STRING, HARDHAT_FORK_CHAIN_KEY } = require('../../../localfork/ForkUtils')
 
 import Debug from 'debug'
 
@@ -37,6 +39,8 @@ export class BundlerServer {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.app.post('/rpc', this.rpc.bind(this))
+    this.app.post('/get-chain-info', this.getChainInfo.bind(this))
+    this.app.post('/get-module-info', this.getModuleInfo.bind(this))
 
     this.httpServer = this.app.listen(this.config.port)
     this.startingPromise = this._preflightCheck()
@@ -126,6 +130,80 @@ export class BundlerServer {
         id,
         error
       })
+    }
+  }
+
+  async getModuleInfo(req: Request, res: Response): Promise<any> {
+    const {
+      chain,
+      module
+    } = req.body
+    try {
+      if (chain === HARDHAT_FORK_CHAIN_ID_STRING) {
+        if (module === "eoaAaveWithdraw") {
+          res.send({
+            eoaAaveWithdrawAddress: forkConfig.eoaAaveWithdrawAddress
+          })
+        }
+        else if (module === "tokenSwap") {
+          res.send({
+            tokenSwapAddress: forkConfig.tokenSwapAddress,
+            univ3router: forkConfig.uniswapV3RouterAddress,
+            univ3quoter: forkConfig.quoterContractAddress,
+            univ3factory: forkConfig.poolFactoryAddress
+          })
+        }
+        else {
+          throw "Module is not supported"
+        }
+      }
+      else {
+        throw "Only Hardhat Chain 31337 is supported"
+      }
+    } catch (err: any) {
+      res.status(400).send(err.message)
+    }
+  }
+
+
+  async getChainInfo(req: Request, res: Response): Promise<any> {
+    const {
+      chain
+    } = req.body
+    try {
+      if (chain === HARDHAT_FORK_CHAIN_ID_STRING || chain == HARDHAT_FORK_CHAIN_KEY) {
+        res.send({
+          currency: 'ETH',
+          rpcdata: { bundlerUrl: `${LOCALHOST_URL}rpc`, rpcUrl: 'http://127.0.0.1:8545' },
+          chain: 31337,
+          aaData: {
+            entryPointAddress: forkConfig.entryPointAddress,
+            factoryAddress: forkConfig.factoryAddress,
+            verificationAddress: forkConfig.verificationAddress
+          },
+          moduleAddresses: {
+            eoaAaveWithdraw: {
+              eoaAaveWithdrawAddress: forkConfig.eoaAaveWithdrawAddress,
+            },
+            paymaster: {
+              paymasterAddress: forkConfig.paymasterAddress,
+              oracle: forkConfig.tokenPriceOracleAddress
+            },
+            tokenSwap: {
+              univ3factory: forkConfig.poolFactoryAddress,
+              univ3quoter: forkConfig.quoterContractAddress,
+              univ3router: forkConfig.uniswapV3RouterAddress,
+              tokenSwapAddress: forkConfig.tokenSwapAddress,
+            }
+          },
+          key: "ethereum-localfork",
+        })
+      }
+      else {
+        throw "Only Hardhat Chain 31337 is supported"
+      }
+    } catch (err: any) {
+      res.status(400).send(err.message)
     }
   }
 
