@@ -41,7 +41,6 @@ const generateBundlerCallScript = () => {
 const deployForFork = async () => {
     const provider = new ethers.providers.JsonRpcProvider(RPC_URL)
     const wallet = new ethers.Wallet(PKEY, provider)
-    await transferAmt(wallet, "0xB1d3BD3E33ec9A3A15C364C441D023a73f1729F6", 10)
     await loadNetwork(wallet)
 }
 
