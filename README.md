@@ -2,27 +2,26 @@
 
 Starting point: `/bundler`
 
-Start the hardhat fork:
-```
-cd localfork
-
-npx hardhat node --fork "https://eth-mainnet.g.alchemy.com/v2/lcA7Kyqv42J1Qh-wLm__DdqSCJBtZyd1"
-```
-
-## `In a seperate terminal tab`
-
-
-Starting point: `/bundler`
-#### Install packages
+## Install packages
 
 ```
 yarn && yarn preprocess
 ```
-#### Run setup and deploy bundler
 
+## Start hardhat fork
 ```
 cd localfork
+
 yarn install 
+
+npx hardhat node --fork "https://eth-mainnet.g.alchemy.com/v2/lcA7Kyqv42J1Qh-wLm__DdqSCJBtZyd1"
+```
+
+## Deploy bundler [in a separate terminam tab]
+
+Starting point: `/bundler`
+```
+cd localfork 
 chmod +x setup.sh
 ./setup.sh
 ```
