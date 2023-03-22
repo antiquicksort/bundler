@@ -6,6 +6,7 @@ module.exports = {
   solidity: "0.8.17",
   networks: {
     hardhat: {
+      chainId: 1337,
       forking: {
         url: "https://eth-mainnet.g.alchemy.com/v2/lcA7Kyqv42J1Qh-wLm__DdqSCJBtZyd1",
       }

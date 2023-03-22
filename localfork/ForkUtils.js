@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 const { ethers } = hre
 
-const HARDHAT_FORK_CHAIN_ID = 31337
-const HARDHAT_FORK_CHAIN_ID_STRING ="31337"
+const HARDHAT_FORK_CHAIN_ID = 1337
+const HARDHAT_FORK_CHAIN_ID_STRING ="1337"
 const HARDHAT_FORK_CHAIN_KEY = "ethereum-localfork"
 const RPC_URL = "http://127.0.0.1:8545"
 const PRIV_KEY = "0x66f37ee92a08eebb5da72886f3c1280d5d1bd5eb8039f52fdb8062df7e364206"
