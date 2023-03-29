@@ -158,7 +158,7 @@ export class BundlerServer {
         }
       }
       else {
-        throw "Only Hardhat Chain 1337 is supported"
+        throw "Only Hardhat Chain 31337 is supported"
       }
     } catch (err: any) {
       res.status(400).send(err.message)
@@ -175,7 +175,7 @@ export class BundlerServer {
         res.send({
           currency: 'ETH',
           rpcdata: { bundlerUrl: `${LOCALHOST_URL}rpc`, rpcUrl: 'http://127.0.0.1:8545' },
-          chain: 1337,
+          chain: 31337,
           aaData: {
             entryPointAddress: forkConfig.entryPointAddress,
             factoryAddress: forkConfig.factoryAddress,
@@ -200,7 +200,7 @@ export class BundlerServer {
         })
       }
       else {
-        throw "Only Hardhat Chain 1337 is supported"
+        throw "Only Hardhat Chain 31337 is supported"
       }
     } catch (err: any) {
       res.status(400).send(err.message)
