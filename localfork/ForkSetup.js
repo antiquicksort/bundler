@@ -95,7 +95,7 @@ const deployFullPaymaster = async () => {
     const aggregator = CHAINLINK_TOKEN_AGGREGATOR_ADDRESS;
     const entryPointAddress = require(forkConfigPath).entryPointAddress
     const tokenPriceOracleAddress = require(forkConfigPath).tokenPriceOracleAddress
-    const params = [entryPointAddress, tokenPriceOracleAddress, token, aggregator]
+    const params = [entryPointAddress]
 
     const paymasterAddress = await deployPaymaster(wallet, params)
     console.log(`const paymasterAddress = "${paymasterAddress}"`)
