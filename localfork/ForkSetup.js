@@ -1,6 +1,6 @@
 const { ethers } = require("hardhat")
 const fs = require("fs");
-
+const hre = require("hardhat");
 const { ContractFactory } = ethers
 const { FunWallet, FunWalletConfig } = require('@fun-wallet/sdk')
 const { TokenSwap, TokenTransfer } = require("@fun-wallet/sdk").Modules
@@ -41,7 +41,70 @@ const generateBundlerCallScript = () => {
 const deployForFork = async () => {
     const provider = new ethers.providers.JsonRpcProvider(RPC_URL)
     const wallet = new ethers.Wallet(PKEY, provider)
-    await loadNetwork(wallet)
+    const res = await loadNetwork(wallet)
+    await logForDynamo(res)
+
+}
+const logForDynamo = async(res)=>{
+    let dynamostruct = {
+        "chain": "56",
+        "aaData": {
+            "entryPointAddress": res.entryPointAddress,
+            "factoryAddress": res.factoryAddress,
+            "verificationAddress": res.verificationAddress
+        },
+        "currency": "BNB",
+        "key": "bsc",
+        "moduleAddresses": {
+            "eoaAaveWithdraw": {
+                "eoaAaveWithdrawAddress": ""
+            },
+            "paymaster": {
+                "oracle": res.tokenPriceOracleAddress,
+                "paymasterAddress": ""
+            },
+            "tokenSwap": {
+                "tokenSwapAddress": res.tokenSwapAddress,
+                "univ3factory": "",
+                "univ3quoter": "",
+                "univ3router": ""
+            }
+        },
+        "modulesSupported": [
+            "eoaAaveWithdraw",
+            "tokenSwap",
+            "paymaster"
+        ],
+        "name": "Binance Smart Chain Mainnet",
+        "rpcdata": {
+            "bundlerUrl": "http://127.0.0.1:3000/rpc",
+            "rpcUrl": "http://127.0.0.1:8545/"
+        },
+        "tokenAddr": {
+            "dai": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+            "usdc": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
+        }
+    }
+    console.log(JSON.stringify(dynamostruct))
+}
+const deployForBSC = async () => {
+    // let BSC_URL = "https://bsc.w3node.com/1252b7dcac60d06cd7590c67aa44579d27e9d8eaab52b799e056edc2803ca639/api"
+    // const bscProvider = new ethers.providers.JsonRpcProvider(BSC_URL);
+
+    // const latestBlock = await bscProvider.getBlockNumber();
+
+    // await hre.network.provider.send("hardhat_reset", [{
+    //     forking: {
+    //         jsonRpcUrl: BSC_URL,
+    //         blockNumber: latestBlock
+    //     }
+    // }])
+    // const provider = new ethers.providers.JsonRpcProvider("https://bsc.w3node.com/1252b7dcac60d06cd7590c67aa44579d27e9d8eaab52b799e056edc2803ca639/api")
+    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545")
+    const wallet = new ethers.Wallet(PKEY, provider)
+    const res = await loadNetwork(wallet)
+    await logForDynamo(res)
+
 }
 
 const loadNetwork = async (wallet) => {
@@ -84,6 +147,7 @@ const loadNetwork = async (wallet) => {
         eoaAaveWithdrawAddress
     }
     fs.writeFileSync(forkConfigPath, JSON.stringify(config))
+    return config
 }
 
 // -dp
@@ -125,7 +189,7 @@ const deployAaveWithdraw = (signer) => {
 }
 
 const deployApproveAndSwap = (signer) => {
-    return deploy(signer, approveAndSwap, [WETH_MAINNET])
+    return deploy(signer, approveAndSwap, ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"]) //wBNB: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
 }
 
 const deployFactory = (signer) => {
@@ -305,6 +369,10 @@ if (typeof require !== 'undefined' && require.main === module) {
         case "-d": {
             deployForFork();
             return;
+        }
+        case "-dbsc": {
+            deployForBSC()
+            return
         }
         case "-da": {
             deployForAvax();
